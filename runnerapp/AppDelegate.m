@@ -8,7 +8,10 @@
 
 #import "AppDelegate.h"
 #import "DetailViewController.h"
-#import "MasterViewController.h"
+#import "HomeViewController.h"
+
+#define PRIMARY_FONT @"Arial"
+#define SECONDARY_FONT @"Times New Roman"
 
 @interface AppDelegate () <UISplitViewControllerDelegate>
 
@@ -19,13 +22,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
-    navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
-    splitViewController.delegate = self;
-
-    UINavigationController *masterNavigationController = splitViewController.viewControllers[0];
-    MasterViewController *controller = (MasterViewController *)masterNavigationController.topViewController;
+    UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
+    HomeViewController *controller = (HomeViewController *)navigationController.topViewController;
     controller.managedObjectContext = self.managedObjectContext;
     return YES;
 }
@@ -141,6 +139,26 @@
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
             abort();
+        }
+    }
+}
+
++ (void)setupFontsForView:(UIView *)view andSubViews:(BOOL)isSubViews
+{
+    if ([view respondsToSelector:@selector(setFont:)] && [view respondsToSelector:@selector(font)]) {
+        id      viewObj = view;
+        UIFont  *font   = [viewObj font];
+        
+        if ([font.fontName isEqualToString:@"AcademyEngravedLetPlain"]) {
+            [viewObj setFont:[UIFont fontWithName:PRIMARY_FONT size:font.pointSize]];
+        } else if ([font.fontName hasPrefix:@"AmericanTypewriter"]) {
+            [viewObj setFont:[UIFont fontWithName:SECONDARY_FONT size:font.pointSize]];
+        }
+    }
+    
+    if (isSubViews) {
+        for (UIView *sview in view.subviews) {
+            [self setupFontsForView:sview andSubViews:YES];
         }
     }
 }
